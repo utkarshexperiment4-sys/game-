@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>काल-कोष का संरक्षक - मुख्य हब</title>
+<style>
+:root {
+  color-scheme: dark;
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: #02040a;
+  color: #e5f7ff;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  overflow: hidden;
+}
+body {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+
+/* ROOT LAYER */
+#root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(0, 255, 255, 0.18), transparent 55%),
+    radial-gradient(circle at 80% 80%, rgba(173, 93, 255, 0.22), transparent 55%),
+    radial-gradient(circle at 50% 50%, #020410, #01020a 65%, #000000 100%);
+  overflow: hidden;
+  color: inherit;
+}
+
+/* STARFIELD BACKGROUND */
+.starfield {
+  pointer-events: none;
+  position: absolute;
+  inset: -20%;
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(200, 255, 255, 0.35) 0, transparent 50%),
+    radial-gradient(circle at 80% 30%, rgba(172, 115, 255, 0.35) 0, transparent 52%),
+    radial-gradient(circle at 30% 80%, rgba(0, 190, 255, 0.3) 0, transparent 50%),
+    radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.4) 0, transparent 55%);
+  opacity: 0.28;
+  mix-blend-mode: screen;
+  animation: starDrift 40s linear infinite alternate;
+  z-index: 0;
+}
+@keyframes starDrift {
+  from { transform: translate3d(0,0,0) scale(1); }
+  to   { transform: translate3d(-2%, 3%, 0) scale(1.1); }
+}
+
+/* VIEWPORT WITH PERSPECTIVE */
+.viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  perspective: 1200px;
+  perspective-origin: 50% 50%;
+  z-index: 1;
+  cursor: grab;
+}
+.viewport:active {
+  cursor: grabbing;
+}
+
+/* 3D SCENE ROOT */
+.scene {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* CRYSTAL + ORBIT */
+.crystal-orbit {
+  position: absolute;
+  transform-style: preserve-3d;
+  transform: translate3d(0, 0, 0);
+}
+
+.crystal {
+  position: absolute;
+  left: -80px;
+  top: -80px;
+  width: 160px;
+  height: 160px;
+  transform-style: preserve-3d;
+  animation: crystalSpin 22s linear infinite;
+}
+@keyframes crystalSpin {
+  from { transform: rotateX(8deg) rotateY(0deg) rotateZ(0deg); }
+  to   { transform: rotateX(8deg) rotateY(360deg) rotateZ(360deg); }
+}
+
+.crystal .face {
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 30% 0%, rgba(255, 255, 255, 0.8), transparent 60%),
+    linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(145, 89, 255, 0.7));
+  border: 1px solid rgba(140, 255, 255, 0.55);
+  box-shadow:
+    0 0 25px rgba(0, 255, 255, 0.25),
+    0 0 80px rgba(141, 92, 255, 0.5);
+  opacity: 0.93;
+  backdrop-filter: blur(4px);
+}
+
+/* Cube-style crystal faces */
+.face.front  { transform: translateZ(80px); }
+.face.back   { transform: rotateY(180deg) translateZ(80px); }
+.face.right  { transform: rotateY(90deg) translateZ(80px); }
+.face.left   { transform: rotateY(-90deg) translateZ(80px); }
+.face.top    { transform: rotateX(90deg) translateZ(80px); }
+.face.bottom { transform: rotateX(-90deg) translateZ(80px); }
+
+/* ORBITAL RINGS */
+.ring {
+  position: absolute;
+  left: -140px;
+  top: -140px;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 255, 255, 0.18);
+  box-shadow:
+    0 0 25px rgba(0, 255, 255, 0.28),
+    0 0 80px rgba(91, 205, 255, 0.45);
+  transform-style: preserve-3d;
+}
+.ring-outer {
+  transform: rotateX(72deg) rotateZ(15deg);
+  animation: ringSpin1 40s linear infinite;
+}
+.ring-inner {
+  width: 220px;
+  height: 220px;
+  left: -110px;
+  top: -110px;
+  border-color: rgba(145, 89, 255, 0.35);
+  box-shadow:
+    0 0 25px rgba(145, 89, 255, 0.35),
+    0 0 80px rgba(145, 89, 255, 0.65);
+  transform: rotateX(25deg) rotateY(45deg);
+  animation: ringSpin2 26s linear infinite reverse;
+}
+@keyframes ringSpin1 {
+  from { transform: rotateX(72deg) rotateZ(15deg); }
+  to   { transform: rotateX(72deg) rotateZ(375deg); }
+}
+@keyframes ringSpin2 {
+  from { transform: rotateX(25deg) rotateY(45deg); }
+  to   { transform: rotateX(25deg) rotateY(405deg); }
+}
+
+/* MENU ITEMS IN 3D SPACE */
+.menu-item {
+  position: absolute;
+  padding: 0.65rem 1.5rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #e8fcff;
+  background:
+    linear-gradient(135deg, rgba(0, 255, 255, 0.08), rgba(0, 0, 0, 0.8));
+  border-radius: 999px;
+  border: 1px solid rgba(120, 255, 255, 0.5);
+  box-shadow:
+    0 0 20px rgba(0, 255, 255, 0.35),
+    0 0 50px rgba(141, 92, 255, 0.45);
+  transform-style: preserve-3d;
+  transform-origin: center;
+  white-space: nowrap;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease,
+    border-color 0.25s ease;
+}
+
+/* Individual 3D placement (relative to scene center) */
+.menu-new {
+  transform: rotateY(-18deg) translate3d(-230px, -40px, 260px);
+}
+.menu-settings {
+  transform: rotateY(10deg) translate3d(220px, -20px, 240px);
+}
+.menu-lore {
+  transform: rotateY(0deg) translate3d(0px, 120px, 280px);
+}
+.menu-exit {
+  transform: rotateY(35deg) translate3d(140px, 180px, 120px);
+  font-size: 0.82rem;
+  padding-inline: 1.25rem;
+}
+
+/* Hover/focus flair */
+.menu-item:hover,
+.menu-item:focus-visible {
+  background:
+    linear-gradient(135deg, rgba(0, 255, 255, 0.25), rgba(145, 89, 255, 0.45));
+  border-color: rgba(255, 255, 255, 0.95);
+  box-shadow:
+    0 0 28px rgba(0, 255, 255, 0.8),
+    0 0 80px rgba(173, 115, 255, 0.85);
+  transform: translateZ(20px) scale(1.05);
+  outline: none;
+}
+.menu-item:active {
+  transform: translateZ(4px) scale(0.97);
+  box-shadow:
+    0 0 18px rgba(0, 255, 255, 0.6),
+    0 0 50px rgba(173, 115, 255, 0.7);
+}
+
+/* 2D UI OVERLAY */
+.ui {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+  color: #e9f9ff;
+  text-shadow: 0 0 16px rgba(0, 0, 0, 0.9);
+}
+
+.ui-header {
+  max-width: min(520px, 80vw);
+}
+
+.ui-title {
+  font-size: clamp(1.4rem, 2.4vw, 2.1rem);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+.ui-subtitle {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+.ui-credit {
+  margin-top: 0.4rem;
+  font-size: 0.72rem;
+  opacity: 0.65;
+}
+
+.ui-footer {
+  align-self: stretch;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-size: 0.78rem;
+  opacity: 0.9;
+  gap: 1.5rem;
+  pointer-events: none;
+}
+
+.ui-hint {
+  max-width: 420px;
+}
+.ui-status {
+  opacity: 0.7;
+  text-align: right;
+}
+
+/* INFO PANEL (click response) */
+.info-panel {
+  position: absolute;
+  left: 50%;
+  bottom: 3vh;
+  transform: translate3d(-50%, 120%, 0);
+  min-width: min(480px, 86vw);
+  max-width: 90vw;
+  padding: 0.85rem 1.2rem;
+  border-radius: 14px;
+  background: radial-gradient(circle at 0 0, rgba(0, 255, 255, 0.32), transparent 55%),
+              rgba(4, 12, 26, 0.96);
+  border: 1px solid rgba(145, 216, 255, 0.7);
+  box-shadow:
+    0 0 25px rgba(0, 0, 0, 0.9),
+    0 0 50px rgba(0, 255, 255, 0.35);
+  color: #e9fcff;
+  font-size: 0.82rem;
+  z-index: 4;
+  opacity: 0;
+  pointer-events: none;
+  backdrop-filter: blur(14px);
+  transition:
+    transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 0.35s ease-out;
+}
+.info-panel.visible {
+  transform: translate3d(-50%, 0, 0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.info-label {
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  margin-bottom: 0.2rem;
+  color: #aaf0ff;
+}
+.info-text {
+  line-height: 1.4;
+}
+
+/* Bottom tap-to-close hint */
+.info-close-hint {
+  margin-top: 0.45rem;
+  font-size: 0.7rem;
+  opacity: 0.65;
+}
+
+/* VIGNETTE */
+.vignette {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.82) 100%);
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  z-index: 2;
+}
+
+/* SMALL SCREEN TWEAKS */
+@media (max-width: 600px) {
+  .ui {
+    padding: 1rem 1.1rem 1.2rem;
+  }
+  .ui-title {
+    letter-spacing: 0.12em;
+  }
+  .ui-subtitle {
+    font-size: 0.82rem;
+  }
+  .ui-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .ui-status {
+    text-align: left;
+  }
+  .menu-item {
+    font-size: 0.78rem;
+    padding: 0.55rem 1.2rem;
+  }
+}
+
+/* Very small heights */
+@media (max-height: 520px) {
+  .ui {
+    padding-top: 0.9rem;
+    padding-bottom: 0.7rem;
+  }
+  .info-panel {
+    bottom: 1.5vh;
+  }
+}
+</style>
+</head>
+<body>
+<div id="root">
+  <div class="starfield"></div>
+
+  <div class="viewport" id="viewport">
+    <div class="scene" id="scene">
+      <!-- Central Time Crystal -->
+      <div class="crystal-orbit">
+        <div class="crystal">
+          <div class="face front"></div>
+          <div class="face back"></div>
+          <div class="face right"></div>
+          <div class="face left"></div>
+          <div class="face top"></div>
+          <div class="face bottom"></div>
+        </div>
+        <div class="ring ring-outer"></div>
+        <div class="ring ring-inner"></div>
+      </div>
+
+      <!-- 3D Menu Items -->
+      <button class="menu-item menu-new"
+              type="button"
+              data-label="नया खेल"
+              data-description="एक नई यात्रा प्रारम्भ करें। काल-कोष के समय-क्रिस्टल को सक्रिय कर के भविष्य और अतीत की संरचनाओं को बदलें।">
+        नया खेल
+      </button>
+
+      <button class="menu-item menu-settings"
+              type="button"
+              data-label="सेटिंग्स"
+              data-description="दृश्य, ध्वनि और नियंत्रणों को अनुकूलित करें। यह केंद्र आपके उपकरण और अंतराल-स्थिरता को आपके अनुसार ढालता है।">
+        सेटिंग्स
+      </button>
+
+      <button class="menu-item menu-lore"
+              type="button"
+              data-label="इतिहास"
+              data-description="काल-कोष के संरक्षकों, विफल समय-प्रयोगों और भूले-बिसरे युगों के रहस्यमय अभिलेख देखें।">
+        इतिहास
+      </button>
+
+      <button class="menu-item menu-exit"
+              type="button"
+              data-label="प्रस्थान"
+              data-description="वर्तमान सत्र से वापस लौटें। समय-धारा से आपका लिंक अस्थायी रूप से निष्क्रिय किया जाएगा।">
+        प्रस्थान
+      </button>
+    </div>
+  </div>
+
+  <!-- 2D Overlay UI -->
+  <div class="ui" aria-hidden="true">
+    <div class="ui-header">
+      <div class="ui-title">काल-कोष का संरक्षक</div>
+      <div class="ui-subtitle">मुख्य केंद्र · समय‑क्रिस्टल इंटरफ़ेस</div>
+      <div class="ui-credit">कॉन्सेप्ट एवं डिज़ाइन · Utkarsh (UtkForce)</div>
+    </div>
+    <div class="ui-footer">
+      <div class="ui-hint">
+        माउस या उंगली से दृश्य घुमाएँ · किसी विकल्प पर क्लिक करें ताकि उसकी जानकारी दिखाई दे।
+      </div>
+      <div class="ui-status">
+        स्टेटस: क्रिस्टल ऑनलाइन · समय-सिंक स्थिर
+      </div>
+    </div>
+  </div>
+
+  <!-- Info panel updated on menu clicks -->
+  <div class="info-panel" id="infoPanel" role="status" aria-live="polite">
+    <div class="info-label" id="infoLabel">काल-कोष</div>
+    <div class="info-text" id="infoText">
+      केंद्र में घूमता यह क्रिस्टल समय-धाराओं को स्थिर रखता है। विकल्प चुनें और अपने पथ का निर्धारण करें।
+    </div>
+    <div class="info-close-hint">बंद करने के लिए कहीं भी टैप / क्लिक करें।</div>
+  </div>
+
+  <div class="vignette"></div>
+</div>
+
+<script>
+/*
+  काल-कोष का संरक्षक · 3D मुख्य हब
+  शुद्ध CSS 3D ट्रांसफ़ॉर्म + वनीला JS इंटरैक्शन
+  By Utkarsh (UtkForce)
+*/
+(function () {
+  const scene = document.getElementById('scene');
+  const viewport = document.getElementById('viewport');
+  const infoPanel = document.getElementById('infoPanel');
+  const infoLabel = document.getElementById('infoLabel');
+  const infoText = document.getElementById('infoText');
+  const menuItems = document.querySelectorAll('.menu-item');
+
+  // Base rotation (deg)
+  let currentRotX = -18;
+  let currentRotY = 24;
+  let targetRotX = currentRotX;
+  let targetRotY = currentRotY;
+
+  let isDragging = false;
+  let lastX = 0;
+  let lastY = 0;
+
+  function clamp(v, min, max) {
+    return v < min ? min : (v > max ? max : v);
+  }
+
+  function render() {
+    // Smooth interpolation
+    const lerpFactor = 0.09;
+    currentRotX += (targetRotX - currentRotX) * lerpFactor;
+    currentRotY += (targetRotY - currentRotY) * lerpFactor;
+
+    scene.style.transform =
+      'translate3d(-50%, -50%, 0) ' +
+      'rotateX(' + currentRotX.toFixed(2) + 'deg) ' +
+      'rotateY(' + currentRotY.toFixed(2) + 'deg)';
+
+    requestAnimationFrame(render);
+  }
+  render();
+
+  // Pointer interaction
+  function onPointerDown(e) {
+    isDragging = true;
+    lastX = e.clientX;
+    lastY = e.clientY;
+  }
+
+  function onPointerMove(e) {
+    if (!isDragging) return;
+    const dx = e.clientX - lastX;
+    const dy = e.clientY - lastY;
+    lastX = e.clientX;
+    lastY = e.clientY;
+
+    const sensitivity = 0.22;
+    targetRotY += dx * sensitivity;
+    targetRotX -= dy * sensitivity;
+
+    targetRotX = clamp(targetRotX, -65, 65);
+  }
+
+  function onPointerUp() {
+    isDragging = false;
+  }
+
+  viewport.addEventListener('pointerdown', onPointerDown);
+  window.addEventListener('pointermove', onPointerMove);
+  window.addEventListener('pointerup', onPointerUp);
+  window.addEventListener('pointerleave', onPointerUp);
+
+  // Menu click handling
+  function showInfo(label, text) {
+    infoLabel.textContent = label || 'काल-कोष';
+    infoText.textContent = text || '';
+    infoPanel.classList.add('visible');
+  }
+
+  menuItems.forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      const label = btn.getAttribute('data-label') || btn.textContent.trim();
+      const desc = btn.getAttribute('data-description') || '';
+      showInfo(label, desc);
+    });
+  });
+
+  // Hide info on global click/tap
+  window.addEventListener('click', function () {
+    infoPanel.classList.remove('visible');
+  });
+
+  // Prevent menu clicks from bubbling to window when closing
+  infoPanel.addEventListener('click', function (e) {
+    e.stopPropagation();
+    infoPanel.classList.remove('visible');
+  });
+
+  // Initial slight delay reveal (optional visual polish)
+  setTimeout(function () {
+    infoPanel.classList.add('visible');
+  }, 900);
+})();
+</script>
+</body>
+  </html>
